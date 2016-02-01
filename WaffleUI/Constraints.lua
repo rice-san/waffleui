@@ -1,3 +1,11 @@
+
+local Round = function(int)
+	if type(int) ~= 'number' then
+		error("Attempt to round a non-number", 2)
+	end
+	return math.floor(int + 0.5)
+end
+
 -- UI Constraint Controls
 
 -- All constraints can be transformed into X, Y, Width, Height.
@@ -50,6 +58,8 @@ Constrain = function(parentView, obj)
 		if type(obj.Constraints.Left) == 'string' then
 			-- If the string continained an ending percent symbol
 			local found, _, percent = string.find(obj.Constraints.Left, "(%d+)%%$")
+			print(percent)
+			percent = tonumber(percent)
 			if found then
 				obj.X = Round((percent/100) * parentView.Width)
 				modifyX = false 
@@ -65,6 +75,7 @@ Constrain = function(parentView, obj)
 		if type(obj.Constraints.Top) == 'string' then
 			-- If the string continained an ending percent symbol
 			local found, _, percent = string.find(obj.Constraints.Top, "(%d+)%%$")
+			percent = tonumber(percent)
 			if found then
 				obj.Y = Round((percent/100) * parentView.Height)
 				modifyY = false 
@@ -73,6 +84,64 @@ Constrain = function(parentView, obj)
 		elseif type(obj.Constraints.Top) == 'number' then
 			obj.Y = (obj.Constraints.Top + 1 > parentView.Height) and parentView.Height or obj.Constraints.Top + 1
 			modifyY = false
+		end
+	end
+	
+	--Right and Bottom Constraints could actually be two different calculations... Just saying.
+
+	if obj.Constraints.Right then
+		if type(obj.Constraints.Right) == 'string' then
+			-- If the string continained an ending percent symbol
+			local found, _, percent = string.find(obj.Constraints.Right, "(%d+)%%$")
+			percent = tonumber(percent)
+			if found then
+				if obj.X and not modifyX then
+					-- If we calculated the X coord, we will use this constraint to set width
+					obj.Width = parentView.Width - Round(parentView.Width*(percent/100)) - obj.X + 1
+					modifyWidth = false
+				elseif obj.Width and not modifyWidth then
+					obj.X = parentView.Width - Round(parentView.Width*(percent/100)) - obj.Width + 1
+					modifyX = false
+				end 
+			end
+		-- If the constraint is a literal number
+		elseif type(obj.Constraints.Right) == 'number' then
+			if obj.X and not modifyX then
+					-- If we calculated the X coord, we will use this constraint to set width
+					obj.Width = parentView.Width - obj.Constraints.Right - obj.X + 1
+					modifyWidth = false
+				elseif obj.Width and not modifyWidth then
+					obj.X = parentView.Width - obj.Constraints.Right - obj.Width + 1
+					modifyX = false
+				end 
+		end
+	end
+	
+	if obj.Constraints.Bottom then
+		if type(obj.Constraints.Bottom) == 'string' then
+			-- If the string continained an ending percent symbol
+			local found, _, percent = string.find(obj.Constraints.Bottom, "(%d+)%%$")
+			percent = tonumber(percent)
+			if found then
+				if obj.Y and not modifyY then
+					-- If we calculated the Y coord, we will use this constraint to set height
+					obj.Height = parentView.Height - Round(parentView.Height*(percent/100)) - obj.Y + 1
+					modifyHeight = false
+				elseif obj.Height and not modifyHeight then
+					obj.Y = parentView.Height - Round(parentView.Height*(percent/100)) - obj.Height + 1
+					modifyY = false
+				end 
+			end
+		-- If the constraint is a literal number
+		elseif type(obj.Constraints.Bottom) == 'number' then
+			if obj.Y and not modifyY then
+					-- If we calculated the Y coord, we will use this constraint to set Height
+					obj.Height = parentView.Height - obj.Constraints.Bottom - obj.Y + 1
+					modifyHeight = false
+				elseif obj.Height and not modifyHeight then
+					obj.Y = parentView.Height - obj.Constraints.Bottom - obj.Height + 1
+					modifyY = false
+				end 
 		end
 	end
 	
@@ -85,5 +154,6 @@ Constrain = function(parentView, obj)
 	
 	obj.canDraw = true
 end
+
 
 
