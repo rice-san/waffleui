@@ -36,9 +36,12 @@ View.Draw = function(self, x, y)
 	end
 end
 
-View.Add = function(self, obj)
-	table.insert(self.Children, obj)
-	Constrain(self, obj)
-	obj.Parent = self
+View.Add = function(self, ...)
+	local objs = {...}
+	for k,v in pairs(objs) do
+		table.insert(self.Children, v)
+		Constrain(self, v)
+		v.Parent = self
+	end
 end
 
