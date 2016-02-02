@@ -58,7 +58,7 @@ Constrain = function(parentView, obj)
 		if type(obj.Constraints.Left) == 'string' then
 			-- If the string continained an ending percent symbol
 			local found, _, percent = string.find(obj.Constraints.Left, "(%d+)%%$")
-			print(percent)
+			--print(percent)
 			percent = tonumber(percent)
 			if found then
 				obj.X = Round((percent/100) * parentView.Width)
@@ -145,13 +145,15 @@ Constrain = function(parentView, obj)
 		end
 	end
 	
-	print(obj.X)
-	print(obj.Y)
-	print(obj.Width)
-	print(obj.Height)
-	
-	os.pullEvent()
-	
+	--For debug purposes
+	--[[
+		print(obj.X)
+		print(obj.Y)
+		print(obj.Width)
+		print(obj.Height)
+		
+		os.pullEvent()
+	]]--
 	obj.canDraw = true
 end
 
