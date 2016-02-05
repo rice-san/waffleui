@@ -1,0 +1,3 @@
+Settings = {
+    Animate = true,
+}

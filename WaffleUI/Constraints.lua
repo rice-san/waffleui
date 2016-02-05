@@ -42,12 +42,12 @@ Constrain = function(parentView, obj)
 	end
 	
 	-- Do minimum constraints last
-	if obj.Constraints.MinWidth and modifyWidth and obj.Constraints.Width < obj.Constraints.MinWidth then
-		obj.Constraints.Width = MinWidth
+	if obj.Constraints.MinWidth and modifyWidth and obj.Width < obj.Constraints.MinWidth then
+		obj.Width = MinWidth
 		modifyWidth = false
 	end
-	if obj.Constraints.MinHeight and modifyHeight and obj.Constraints.Height < obj.Constraints.MinHeight then
-		obj.Constraints.Height = MinHeight
+	if obj.Constraints.MinHeight and modifyHeight and obj.Height < obj.Constraints.MinHeight then
+		obj.Height = MinHeight
 		modifyHeight = false
 	end
 	

@@ -69,10 +69,13 @@ Button.OnClick = function(self, event)
 end
 
 Button.MouseUp = function(self, event)
+	local wasActive = self.Active
 	self.Active = false
 	self.Draw()
-	for k,v in pairs(self.Actions.MouseUp) do
-		v(event);
+	if wasActive then
+		for k,v in pairs(self.Actions.MouseUp) do
+			v(event);
+		end
 	end
 end
 
