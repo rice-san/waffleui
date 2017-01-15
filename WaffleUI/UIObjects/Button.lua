@@ -21,6 +21,7 @@ Button = {
 	Parent = nil,
 	Type = "Button",
 	canDraw = false,
+	Actions = {}
 }
 
 Button.New = function(self, constraints, tc, bc, atc, abc, text, align)
@@ -33,6 +34,7 @@ Button.New = function(self, constraints, tc, bc, atc, abc, text, align)
 	button.ActiveBackgroundColor = abc
 	button.Text = text
 	button.TextAlign = align
+	button.Actions = {}
 	return button
 end
 
@@ -43,45 +45,54 @@ Button.Draw = function(self, x, y)
 	if not self.Parent.canDraw or self.Parent.Type ~= 'View' then
 		error("Attempt to draw "..self.Type.." without constrained parent", 2)
 	end
-	
-	local bg = self.ActiveBackgroundColor and self.Active or self.BackgroundColor
-	local fg = self.ActiveTextColor and self.Active or self.TextColor
-	
-	Draw:FillRect(self.X+x-1, self.Y+y-1, self.Width, self.Height, bg)
-	
+
+	local bg = self.Active and self.ActiveBackgroundColor or self.BackgroundColor
+	local fg = self.Active and self.ActiveTextColor or self.TextColor
+
+	Draw:FillRect(self.X+self.Parent.X-1, self.Y+self.Parent.Y-1, self.Width, self.Height, bg)
+
 	local drawText = (string.len(self.Text) > self.Width) and string.sub(self.Text, 1, self.Width - 3).."..." or self.Text
 	if self.TextAlign == "center" then
-		Draw:DrawText(self.X+x+Draw:Round(self.Width/2 - string.len(drawText)/2)-1, self.Y+(y-1)+Draw:Round(self.Height/2)-1, drawText, fg, bg)
+		Draw:DrawText(self.X+self.Parent.X+Draw:Round(self.Width/2 - string.len(drawText)/2)-1, self.Y+(self.Parent.Y-1)+Draw:Round(self.Height/2)-1, drawText, fg, bg)
 	elseif self.TextAlign == "left" then
-		Draw:DrawText((self.X+x)-1, self.Y+(y-1)+Draw:Round(self.Height/2)-1, drawText, fg, bg)
+		Draw:DrawText((self.X+self.Parent.X)-1, self.Y+(self.Parent.Y-1)+Draw:Round(self.Height/2)-1, drawText, fg, bg)
 	elseif self.TextAlign == "right" then
 		local textlen = string.len(drawText)
-		Draw:DrawText((self.X+(self.Width)+(x-1))-textlen, self.Y+(y-1)+Draw:Round(self.Height/2)-1, drawText, fg, bg)
+		Draw:DrawText((self.X+(self.Width)+(self.Parent.X-1))-textlen, self.Y+(self.Parent.Y-1)+Draw:Round(self.Height/2)-1, drawText, fg, bg)
 	end
 end
 
-Button.OnClick = function(self, event)
+Button.HandleClick = function(self, x, y, button)
+	UIStatus.needsUpdate = true
 	self.Active = true
-	self.Draw()
-	for k,v in pairs(self.Actions.MouseClick) do
-		v(event);
+	--self:Draw()
+	if self.Actions.MouseClick then
+		for i=1,#(self.Actions.MouseClick) do
+			self.Actions.MouseClick[i](event);
+		end
 	end
+	ActiveObject = self
 end
 
-Button.MouseUp = function(self, event)
+Button.HandleMouseUp = function(self, event)
+	UIStatus.needsUpdate = true
+	--FIXME: Button doesn't lose active state when MouseUp is not inside.
 	local wasActive = self.Active
 	self.Active = false
-	self.Draw()
+	--self:Draw()
 	if wasActive then
-		for k,v in pairs(self.Actions.MouseUp) do
-			v(event);
+		if self.Actions.MouseUp then
+			for i=1,#(self.Actions.MouseUp) do
+				self.Actions.MouseUp[i](event);
+			end
 		end
 	end
 end
 
-Button.MouseDrag = function(self, event)
-	self.Draw()
-	for k,v in pairs(self.Actions.MouseDrag) do
-		v(event);
+Button.HandleMouseDrag = function(self, event)
+	UIStatus.needsUpdate = true
+	--self:Draw()
+	for i=1,#(self.Actions.MouseDrag) do
+		self.Actions.MouseDrag[i](event);
 	end
 end

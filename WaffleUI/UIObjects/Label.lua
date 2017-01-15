@@ -36,19 +36,16 @@ Label.Draw = function(self, x, y)
 	if not self.Parent.canDraw or self.Parent.Type ~= 'View' then
 		error("Attempt to draw "..self.Type.." without constrained parent", 2)
 	end
-	
-	Draw:FillRect(self.X+x-1, self.Y+y-1, self.Width, self.Height, self.BackgroundColor)
-	
+
+	Draw:FillRect(self.X+self.Parent.X-1, self.Y+self.Parent.Y-1, self.Width, self.Height, self.BackgroundColor)
+
 	local drawText = (string.len(self.Text) > self.Width) and string.sub(self.Text, 1, self.Width - 3).."..." or self.Text
 	if self.TextAlign == "center" then
-		Draw:DrawText(self.X+x+Draw:Round(self.Width/2 - string.len(drawText)/2)-1, self.Y+(y-1)+Draw:Round(self.Height/2)-1, drawText, self.TextColor, self.BackgroundColor)
+		Draw:DrawText(self.X+self.Parent.X+Draw:Round(self.Width/2 - string.len(drawText)/2)-1, self.Y+(self.Parent.Y-1)+Draw:Round(self.Height/2)-1, drawText, self.TextColor, self.BackgroundColor)
 	elseif self.TextAlign == "left" then
-		Draw:DrawText((self.X+x)-1, self.Y+(y-1)+Draw:Round(self.Height/2)-1, drawText, self.TextColor, self.BackgroundColor)
+		Draw:DrawText((self.X+self.Parent.X)-1, self.Y+(self.Parent.Y-1)+Draw:Round(self.Height/2)-1, drawText, self.TextColor, self.BackgroundColor)
 	elseif self.TextAlign == "right" then
 		local textlen = string.len(drawText)
-		Draw:DrawText((self.X+(self.Width)+(x-1))-textlen, self.Y+(y-1)+Draw:Round(self.Height/2)-1, drawText, self.TextColor, self.BackgroundColor)
+		Draw:DrawText((self.X+(self.Width)+(self.Parent.X-1))-textlen, self.Y+(self.Parent.Y-1)+Draw:Round(self.Height/2)-1, drawText, self.TextColor, self.BackgroundColor)
 	end
 end
-
-
-

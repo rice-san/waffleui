@@ -8,9 +8,14 @@ ScreenPort = {
 	BackgroundColor = "lightGray",
 	Children = {},
 	Parent = nil,
-	Type = "View",
+	Type = "ScreenPort",
 	canDraw = true,
+	delegateEvents = true,
 }
+
+ScreenPort.__call = function(t, ...)
+	ScreenPort:New(...)
+end
 
 ScreenPort.New = function(self)
 	local screenPort = {}
@@ -18,6 +23,8 @@ ScreenPort.New = function(self)
 	screenPort.X = 1
 	screenPort.Y = 1
 	screenPort.Width, screenPort.Height = term.getSize()
+	screenPort.Children = {}
+	setmetatable(screenPort.Children, update_mt)
 	return screenPort
 end
 
@@ -26,12 +33,12 @@ ScreenPort.Draw = function(self)
 	for _, uiObject in pairs(self.Children) do
 		uiObject:Draw(self.X, self.Y)
 	end
+	self.needsUpdate = false
 end
 
 ScreenPort.Add = function(self, obj)
 	table.insert(self.Children, obj)
 	Constrain(self, obj)
 	obj.Parent = self
+	UIStatus.needsUpdate = true
 end
-
-

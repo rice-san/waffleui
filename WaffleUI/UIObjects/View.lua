@@ -16,6 +16,7 @@ View = {
 	Parent = nil,
 	Type = "View",
 	canDraw = false,
+	delegateEvents = true,
 }
 
 View.__index = View
@@ -25,6 +26,8 @@ View.New = function(self, constraints, bc)
 	setmetatable(view, View)
 	view.Constraints = constraints
 	view.BackgroundColor = bc
+	view.Children = {}
+	setmetatable(view.Children, update_mt)
 	return view
 end
 
@@ -43,5 +46,5 @@ View.Add = function(self, ...)
 		Constrain(self, v)
 		v.Parent = self
 	end
+	--UIStatus.needsUpdate = true
 end
-
